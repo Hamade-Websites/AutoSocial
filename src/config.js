@@ -58,9 +58,26 @@ const config = {
     projectRoot,
     process.env.YOUTUBE_PROFILE_DIR || ".profile-youtube"
   ),
+  mediumQueueDir: path.resolve(
+    projectRoot,
+    process.env.MEDIUM_QUEUE_DIR || "queue/default/medium/pending"
+  ),
+  mediumPostedDir: path.resolve(
+    projectRoot,
+    process.env.MEDIUM_POSTED_DIR || "queue/default/medium/posted"
+  ),
+  mediumFailedDir: path.resolve(
+    projectRoot,
+    process.env.MEDIUM_FAILED_DIR || "queue/default/medium/failed"
+  ),
+  mediumProfileDir: path.resolve(
+    projectRoot,
+    process.env.MEDIUM_PROFILE_DIR || ".profile-medium"
+  ),
   cronExpression: process.env.CRON_EXPRESSION || "0 */2 * * *",
   instagramCronExpression: process.env.INSTAGRAM_CRON_EXPRESSION || "0 */2 * * *",
   youtubeCronExpression: process.env.YOUTUBE_CRON_EXPRESSION || "0 */2 * * *",
+  mediumCronExpression: process.env.MEDIUM_CRON_EXPRESSION || "0 */2 * * *",
   timezone: process.env.TZ || "UTC",
   browserLocale: process.env.BROWSER_LOCALE || "en-US",
   headless: getBoolean(process.env.HEADLESS, false),
@@ -77,6 +94,8 @@ const config = {
     process.env.INSTAGRAM_UPLOAD_URL || "https://www.instagram.com/create/style/",
   youtubeUploadPageUrl:
     process.env.YOUTUBE_UPLOAD_URL || "https://studio.youtube.com",
+  mediumUploadPageUrl:
+    process.env.MEDIUM_UPLOAD_URL || "https://medium.com/new-story",
   dashboardHost: process.env.DASHBOARD_HOST || "127.0.0.1",
   dashboardPort: Number(process.env.DASHBOARD_PORT || 3000),
   dashboardAllowRemote: getBoolean(process.env.DASHBOARD_ALLOW_REMOTE, false),
@@ -109,6 +128,7 @@ config.platformQueues = {
   tiktok: config.queueDir,
   instagram: config.instagramQueueDir,
   youtube: config.youtubeQueueDir,
+  medium: config.mediumQueueDir,
 };
 
 module.exports = {
