@@ -8,6 +8,9 @@ const projectRoot = path.resolve(__dirname, "..");
 const excludedTextFiles = new Set([
   "src/platform-ui-labels.js",
   "test/repository-language.test.js",
+  "MCP_HOSTED_PLAN.md",
+  "MCP_HOSTED_PLAN_REVIEW.md",
+  "SPEC.md",
 ]);
 const binaryExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico"]);
 const localizedTermHex = [

@@ -3,14 +3,15 @@ const { config } = require("./config");
 const { DaemonController } = require("./daemon-controller");
 const { InstagramDaemonController } = require("./instagram-daemon-controller");
 const { YouTubeDaemonController } = require("./youtube-daemon-controller");
+const { MediumDaemonController } = require("./medium-daemon-controller");
 const { getAccountQueueDirs, ensureAccountDirs } = require("./account-manager");
 
 /**
  * Central registry that manages per-profile daemon controller instances.
- * Each profile gets its own set of 3 daemon controllers (tiktok, instagram, youtube)
+ * Each profile gets its own set of 4 daemon controllers (tiktok, instagram, youtube, medium)
  * so they can run concurrently across profiles.
  *
- * Map<accountId, { tiktok, instagram, youtube }>
+ * Map<accountId, { tiktok, instagram, youtube, medium }>
  */
 const registry = new Map();
 
@@ -57,6 +58,13 @@ async function getDaemons(accountId) {
             failedDir: queueDirs.youtube.failed,
             statePath: path.resolve(stateDir, "youtube-scheduler-state.json"),
         }),
+        medium: new MediumDaemonController({
+            accountId,
+            queueDir: queueDirs.medium.pending,
+            postedDir: queueDirs.medium.posted,
+            failedDir: queueDirs.medium.failed,
+            statePath: path.resolve(stateDir, "medium-scheduler-state.json"),
+        }),
     };
 
     registry.set(accountId, daemons);
@@ -73,6 +81,7 @@ async function getAllStatus() {
             tiktok: await daemons.tiktok.getStatus(),
             instagram: await daemons.instagram.getStatus(),
             youtube: await daemons.youtube.getStatus(),
+            medium: await daemons.medium.getStatus(),
         };
     }
     return results;
