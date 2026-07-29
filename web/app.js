@@ -54,6 +54,7 @@ const UI = {
     tiktok: { loginOpen: false, sessionSaved: false, schedulerRunning: false },
     instagram: { loginOpen: false, sessionSaved: false, schedulerRunning: false },
     youtube: { loginOpen: false, sessionSaved: false, schedulerRunning: false },
+    medium: { loginOpen: false, sessionSaved: false, schedulerRunning: false },
     brands: [],
     activeBrandId: null,
     activeBrandName: "",
@@ -62,6 +63,7 @@ const UI = {
     tiktok: false,
     instagram: false,
     youtube: false,
+    medium: false,
   },
 
   els: {
@@ -156,6 +158,28 @@ const UI = {
     ytQueueList: document.getElementById("ytQueueList"),
     ytLogsContainer: document.getElementById("ytLogsContainer"),
 
+    // Medium
+    mdRunBtn: document.getElementById("mdRunBtn"),
+    mdStartBtn: document.getElementById("mdStartBtn"),
+    mdStopBtn: document.getElementById("mdStopBtn"),
+    mdCronInput: document.getElementById("mdCronInput"),
+    mdUpdateScheduleBtn: document.getElementById("mdUpdateScheduleBtn"),
+    mdPlanType: document.getElementById("mdPlanType"),
+    mdPlanTime: document.getElementById("mdPlanTime"),
+    mdPlanTimes: document.getElementById("mdPlanTimes"),
+    mdPlanWeekday: document.getElementById("mdPlanWeekday"),
+    mdPlanApplyBtn: document.getElementById("mdPlanApplyBtn"),
+    mdPendingCount: document.getElementById("mdPendingCount"),
+    mdPostedCount: document.getElementById("mdPostedCount"),
+    mdFailedCount: document.getElementById("mdFailedCount"),
+    mdSchedulerState: document.getElementById("mdSchedulerState"),
+    mdTimezoneLabel: document.getElementById("mdTimezoneLabel"),
+    mdLastRunLabel: document.getElementById("mdLastRunLabel"),
+    mdInstantPostToggle: document.getElementById("mdInstantPostToggle"),
+    mdRandomQueueToggle: document.getElementById("mdRandomQueueToggle"),
+    mdQueueList: document.getElementById("mdQueueList"),
+    mdLogsContainer: document.getElementById("mdLogsContainer"),
+
     uniqStartBtn: document.getElementById("uniqStartBtn"),
     uniqStopBtn: document.getElementById("uniqStopBtn"),
     uniqOpenInputBtn: document.getElementById("uniqOpenInputBtn"),
@@ -204,6 +228,7 @@ const UI = {
     this.updateFriendlyScheduleVisibility("tiktok");
     this.updateFriendlyScheduleVisibility("instagram");
     this.updateFriendlyScheduleVisibility("youtube");
+    this.updateFriendlyScheduleVisibility("medium");
     this.startPolling();
     this.renderAccounts();
   },
@@ -436,6 +461,63 @@ const UI = {
     if (this.els.ytRandomQueueToggle) {
       this.els.ytRandomQueueToggle.addEventListener("change", () =>
         this.handleRandomQueueToggle(this.els.ytRandomQueueToggle.checked)
+      );
+    }
+
+    // Medium event listeners
+    if (this.els.mdStartBtn) {
+      this.els.mdStartBtn.addEventListener("click", () =>
+        this.handleAction("/api/medium/start")
+      );
+    }
+    if (this.els.mdStopBtn) {
+      this.els.mdStopBtn.addEventListener("click", () =>
+        this.handleAction("/api/medium/stop")
+      );
+    }
+    if (this.els.mdRunBtn) {
+      this.els.mdRunBtn.addEventListener("click", () =>
+        this.handleAction("/api/medium/run-once")
+      );
+    }
+    if (this.els.mdUpdateScheduleBtn) {
+      this.els.mdUpdateScheduleBtn.addEventListener("click", () =>
+        this.handleUpdateSchedule(false, false, false, true)
+      );
+    }
+    if (this.els.mdPlanType) {
+      this.els.mdPlanType.addEventListener("change", () =>
+        this.handleFriendlyScheduleDraftChange("medium")
+      );
+    }
+    if (this.els.mdPlanTime) {
+      this.els.mdPlanTime.addEventListener("change", () =>
+        this.handleFriendlyScheduleDraftChange("medium")
+      );
+    }
+    if (this.els.mdPlanWeekday) {
+      this.els.mdPlanWeekday.addEventListener("change", () =>
+        this.handleFriendlyScheduleDraftChange("medium")
+      );
+    }
+    if (this.els.mdPlanTimes) {
+      this.els.mdPlanTimes.addEventListener("input", () =>
+        this.handleFriendlyScheduleDraftChange("medium")
+      );
+    }
+    if (this.els.mdPlanApplyBtn) {
+      this.els.mdPlanApplyBtn.addEventListener("click", () =>
+        this.handleFriendlySchedule("medium")
+      );
+    }
+    if (this.els.mdInstantPostToggle) {
+      this.els.mdInstantPostToggle.addEventListener("change", () =>
+        this.handleInstantPostToggle("medium", this.els.mdInstantPostToggle.checked)
+      );
+    }
+    if (this.els.mdRandomQueueToggle) {
+      this.els.mdRandomQueueToggle.addEventListener("change", () =>
+        this.handleRandomQueueToggle(this.els.mdRandomQueueToggle.checked)
       );
     }
     if (this.els.accountsTableBody) {
@@ -752,6 +834,13 @@ const UI = {
         weekday: this.els.ytPlanWeekday,
         cronInput: this.els.ytCronInput,
       },
+      medium: {
+        type: this.els.mdPlanType,
+        time: this.els.mdPlanTime,
+        times: this.els.mdPlanTimes,
+        weekday: this.els.mdPlanWeekday,
+        cronInput: this.els.mdCronInput,
+      },
     };
     return map[platform];
   },
@@ -761,6 +850,7 @@ const UI = {
       tiktok: { schedule: "/api/schedule", runOnce: "/api/run-once" },
       instagram: { schedule: "/api/instagram/schedule", runOnce: "/api/instagram/run-once" },
       youtube: { schedule: "/api/youtube/schedule", runOnce: "/api/youtube/run-once" },
+      medium: { schedule: "/api/medium/schedule", runOnce: "/api/medium/run-once" },
     };
     return map[platform];
   },
@@ -1111,11 +1201,13 @@ const UI = {
       tiktok: "/api/tiktok/login",
       instagram: "/api/instagram/login",
       youtube: "/api/youtube/login",
+      medium: "/api/medium/login",
     };
     const labelMap = {
       tiktok: "TikTok",
       instagram: "Instagram",
       youtube: "YouTube",
+      medium: "Medium",
     };
     try {
       const result = await API.post(endpointMap[platform]);
@@ -1135,11 +1227,13 @@ const UI = {
       tiktok: "/api/tiktok/login/close",
       instagram: "/api/instagram/login/close",
       youtube: "/api/youtube/login/close",
+      medium: "/api/medium/login/close",
     };
     const labelMap = {
       tiktok: "TikTok",
       instagram: "Instagram",
       youtube: "YouTube",
+      medium: "Medium",
     };
     try {
       const result = await API.post(endpointMap[platform]);
@@ -1176,20 +1270,24 @@ const UI = {
         status,
         instagramStatus,
         youtubeStatus,
+        mediumStatus,
         uniquifier,
         accounts,
         tiktokLoginStatus,
         instagramLoginStatus,
         youtubeLoginStatus,
+        mediumLoginStatus,
       ] = await Promise.all([
         API.get("/api/status"),
         API.get("/api/instagram/status"),
         API.get("/api/youtube/status"),
+        API.get("/api/medium/status"),
         API.get("/api/uniquifier/status"),
         API.get("/api/accounts"),
         API.get("/api/tiktok/login/status"),
         API.get("/api/instagram/login/status"),
         API.get("/api/youtube/login/status"),
+        API.get("/api/medium/login/status"),
       ]);
       // Fetch autodownload status in parallel but don't block others
       API.get("/api/autodownload/status").then((ad) => this.renderAutoDownloadStatus(ad)).catch(() => { });
@@ -1199,6 +1297,7 @@ const UI = {
       this.renderStatus(status);
       this.renderInstagramStatus(instagramStatus);
       this.renderYouTubeStatus(youtubeStatus);
+      this.renderMediumStatus(mediumStatus);
       this.renderUniquifierStatus(uniquifier);
       this.renderBrandSelector(accounts);
       this.accountState = {
@@ -1216,6 +1315,11 @@ const UI = {
           loginOpen: Boolean(youtubeLoginStatus?.open),
           sessionSaved: Boolean(youtubeLoginStatus?.saved),
           schedulerRunning: Boolean(youtubeStatus?.running),
+        },
+        medium: {
+          loginOpen: Boolean(mediumLoginStatus?.open),
+          sessionSaved: Boolean(mediumLoginStatus?.saved),
+          schedulerRunning: Boolean(mediumStatus?.running),
         },
         brands: accounts?.accounts || [],
         activeBrandId: accounts?.activeAccountId || null,
@@ -1292,6 +1396,12 @@ const UI = {
         icon: "ph-youtube-logo",
         color: "#FF0000",
         bg: "#FF0000",
+      },
+      medium: {
+        label: "Medium",
+        icon: "ph-medium-logo",
+        color: "#00ab6c",
+        bg: "#00ab6c",
       },
     };
 
@@ -1705,6 +1815,78 @@ const UI = {
     this.applySchedulePlanFromStatus("youtube", data);
     if (this.els.ytTimezoneLabel) this.els.ytTimezoneLabel.textContent = timezone;
     if (this.els.ytLastRunLabel) this.els.ytLastRunLabel.textContent = lastRunText;
+  },
+
+  renderMediumStatus(data) {
+    const pending = data.queue?.counts?.pending ?? 0;
+    const posted = data.queue?.counts?.posted ?? 0;
+    const failed = data.queue?.counts?.failed ?? 0;
+    const pendingArticles = data.queue?.pendingArticles || [];
+    const timezone = data.timezone || "UTC";
+    const lastRunText = data.lastRunAt ? new Date(data.lastRunAt).toLocaleString() : "Never";
+
+    if (this.els.mdPendingCount) this.els.mdPendingCount.textContent = pending;
+    if (this.els.mdPostedCount) this.els.mdPostedCount.textContent = posted;
+    if (this.els.mdFailedCount) this.els.mdFailedCount.textContent = failed;
+    if (this.els.mdSchedulerState) {
+      this.els.mdSchedulerState.textContent = data.running ? "Running" : "Stopped";
+      this.els.mdSchedulerState.classList.toggle("success", Boolean(data.running));
+      this.els.mdSchedulerState.classList.toggle("error", !data.running);
+    }
+
+    // Sync instant-post toggle
+    if (this.els.mdInstantPostToggle && document.activeElement !== this.els.mdInstantPostToggle) {
+      this.els.mdInstantPostToggle.checked = Boolean(data.instantPost);
+    }
+
+    if (this.els.mdRandomQueueToggle && document.activeElement !== this.els.mdRandomQueueToggle) {
+      this.els.mdRandomQueueToggle.checked = Boolean(data.randomQueueOrder);
+    }
+
+    const logsHtml = (data.logs || [])
+      .slice()
+      .reverse()
+      .map(
+        (logEntry) => `
+      <div class="log-entry">
+        <span class="log-time">${logEntry.at.split("T")[1].split(".")[0]}</span>
+        <span class="log-msg ${logEntry.level === "error" ? "log-error" : ""}">${escapeHtml(logEntry.message)}</span>
+      </div>
+    `
+      )
+      .join("");
+    this.updateLogContainer(this.els.mdLogsContainer, logsHtml);
+
+    const queueHtml = pendingArticles.length
+      ? pendingArticles
+        .map((article) => {
+          const articleName = typeof article === "string" ? article : article.name;
+          const hasCaption = typeof article === "object" && article.hasCaption;
+          return `
+      <div class="queue-item">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <i class="ph ph-file-text" style="font-size:20px;"></i>
+          <span>${escapeHtml(articleName)}</span>
+          ${hasCaption ? '<span class="status-badge" style="background:rgba(255,255,255,0.1); color:#ccc; border:1px solid #444; margin-left:8px;"><i class="ph ph-file-text"></i> Caption</span>' : ''}
+        </div>
+        <span class="status-badge active">Pending</span>
+      </div>
+    `;
+        })
+        .join("")
+      : '<div style="text-align:center; padding:20px; color:#666;">Queue is empty</div>';
+    if (this.els.mdQueueList) this.els.mdQueueList.innerHTML = queueHtml;
+
+    if (
+      this.els.mdCronInput &&
+      document.activeElement !== this.els.mdCronInput &&
+      !this.isScheduleDraftDirty("medium")
+    ) {
+      this.els.mdCronInput.value = data.cronExpression || "";
+    }
+    this.applySchedulePlanFromStatus("medium", data);
+    if (this.els.mdTimezoneLabel) this.els.mdTimezoneLabel.textContent = timezone;
+    if (this.els.mdLastRunLabel) this.els.mdLastRunLabel.textContent = lastRunText;
   },
 
   renderUniquifierStatus(data) {

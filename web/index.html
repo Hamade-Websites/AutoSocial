@@ -60,6 +60,14 @@
           <i class="ph ph-youtube-logo"></i>
           <span>YouTube</span>
         </button>
+        <button class="nav-item" data-view="medium">
+          <i class="ph ph-medium-logo"></i>
+          <span>Medium</span>
+        </button>
+        <button class="nav-item" data-view="medium">
+          <i class="ph ph-medium-logo"></i>
+          <span>Medium</span>
+        </button>
 
         <div class="nav-label">Tools</div>
         <button class="nav-item" data-view="uniquifier">
@@ -599,7 +607,120 @@
         </div>
       </section>
 
-      <!-- View: Video Uniquifier -->
+      <!-- View: Medium -->
+      <section id="view-medium" class="view-section">
+        <header class="view-header">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="brand-icon" style="background:#00ab6c; width:40px; height:40px; font-size:24px;"><i
+                class="ph ph-medium-logo"></i></div>
+            <div>
+              <h2 style="margin:0;">Medium Articles</h2>
+              <span style="color:var(--text-muted); font-size:13px;">Publish long-form articles and stories</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="mdRunBtn" class="control-btn-small primary"><i class="ph ph-play"></i> Run Once</button>
+            <button id="mdStartBtn" class="control-btn-small success"><i class="ph ph-play-circle"></i> Start</button>
+            <button id="mdStopBtn" class="control-btn-small danger"><i class="ph ph-stop-circle"></i> Stop</button>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="stats-cards">
+            <div class="stat-card">
+              <div class="stat-value" id="mdPendingCount">-</div>
+              <div class="stat-label">Pending Articles</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value success" id="mdPostedCount">-</div>
+              <div class="stat-label">Published Total</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value error" id="mdFailedCount">-</div>
+              <div class="stat-label">Failed Total</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="mdSchedulerState">-</div>
+              <div class="stat-label">Scheduler State</div>
+            </div>
+          </div>
+
+          <div class="card full-width">
+            <div class="card-title">Medium Scheduler</div>
+            <div class="input-group" style="margin-bottom:10px; flex-wrap:wrap;">
+              <select id="mdPlanType" class="control-input" style="max-width:180px;">
+                <option value="once">Once (run now)</option>
+                <option value="daily" selected>Daily</option>
+                <option value="dailyTimes">Daily at specific times</option>
+                <option value="weekly">Weekly</option>
+                <option value="every2h">Every 2 hours</option>
+                <option value="every3h">Every 3 hours</option>
+                <option value="every4h">Every 4 hours</option>
+                <option value="every6h">Every 6 hours</option>
+                <option value="every8h">Every 8 hours</option>
+                <option value="every12h">Every 12 hours</option>
+                <option value="custom">Custom Cron</option>
+              </select>
+              <input id="mdPlanTime" type="time" class="control-input" value="12:00" style="max-width:140px;">
+              <input id="mdPlanTimes" type="text" class="control-input" placeholder="e.g. 09:30, 13:15, 20:45"
+                style="display:none; min-width:260px;">
+              <select id="mdPlanWeekday" class="control-input" style="max-width:160px; display:none;">
+                <option value="1">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="0">Sunday</option>
+              </select>
+              <button id="mdPlanApplyBtn" class="control-btn-small primary">Apply</button>
+            </div>
+            <div class="input-group">
+              <input type="text" id="mdCronInput" class="control-input" placeholder="0 */2 * * *">
+              <button id="mdUpdateScheduleBtn" class="control-btn-small">Save Schedule</button>
+            </div>
+            <div
+              style="display:flex; gap:18px; margin-top:12px; flex-wrap:wrap; color:var(--text-muted); font-size:13px;">
+              <span>Timezone: <span id="mdTimezoneLabel" class="mono">UTC</span></span>
+              <span>Last run: <span id="mdLastRunLabel" class="mono">Never</span></span>
+            </div>
+            <div
+              style="display:flex; align-items:center; gap:12px; margin-top:16px; padding-top:14px; border-top:1px solid var(--border-color);">
+            <label class="toggle-switch">
+              <input type="checkbox" id="mdInstantPostToggle">
+              <span class="toggle-slider"></span>
+            </label>
+            <div>
+              <div style="font-weight:600; font-size:13px;">Instant Post</div>
+              <div style="color:var(--text-muted); font-size:12px;">Post immediately when a new article lands in the
+                queue</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; margin-top:12px;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="mdRandomQueueToggle">
+              <span class="toggle-slider"></span>
+            </label>
+            <div>
+              <div style="font-weight:600; font-size:13px;">Random Queue Order (Global)</div>
+              <div style="color:var(--text-muted); font-size:12px;">Pick a random pending article each run instead of the first alphabetic one. Captions still follow the chosen article.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card full-width">
+          <div class="card-title">Medium Queue</div>
+          <div class="queue-list" id="mdQueueList"></div>
+        </div>
+
+        <div class="card full-width">
+          <div class="card-title">Medium Live Logs</div>
+          <div class="logs-container" id="mdLogsContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Video Uniquifier -->
       <section id="view-uniquifier" class="view-section">
         <header class="view-header">
           <h2>Video Uniquifier</h2>

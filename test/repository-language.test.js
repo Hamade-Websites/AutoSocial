@@ -11,6 +11,8 @@ const excludedTextFiles = new Set([
   "MCP_HOSTED_PLAN.md",
   "MCP_HOSTED_PLAN_REVIEW.md",
   "SPEC.md",
+  "queue/.DS_Store",
+  "queue/default/.DS_Store",
 ]);
 const binaryExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico"]);
 const localizedTermHex = [
